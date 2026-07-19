@@ -45,11 +45,7 @@ workers/
 
 ## Run
 
-docker compose up -d
-
 npm install
-
-npm run seed
 
 npm run dev
 
