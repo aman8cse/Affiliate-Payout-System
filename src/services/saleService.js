@@ -5,11 +5,7 @@ import env from "../config/env.js";
 
 class SaleService {
 
-    async createSale({
-        userId,
-        commissionAmount
-    }) {
-
+    async createSale({ userId, commissionAmount }) {
         const user = await User.findById(userId);
 
         if (!user) {
@@ -21,25 +17,16 @@ class SaleService {
         );
 
         const sale = await Sale.create({
-
             user: userId,
-
             commissionAmount,
-
             advanceAmount,
-
             finalAmount: null,
-
             status: "PENDING",
-
             advancePaid: false,
-
             finalPaid: false
-
         });
 
         return sale;
-
     }
 
     async getSales() {
@@ -53,7 +40,6 @@ class SaleService {
     }
 
     async getSaleById(id) {
-
         const sale = await Sale.findById(id)
             .populate("user", "name email");
 
@@ -66,7 +52,6 @@ class SaleService {
     }
 
     async confirmSale(saleId) {
-
         const sale = await Sale.findById(saleId);
 
         if (!sale) {
@@ -93,7 +78,6 @@ class SaleService {
     }
 
     async rejectSale(saleId) {
-
         const sale = await Sale.findById(saleId);
 
         if (!sale) {
@@ -115,7 +99,6 @@ class SaleService {
         await sale.save();
 
         return sale;
-
     }
 }
 

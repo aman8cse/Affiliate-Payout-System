@@ -17,11 +17,8 @@ export const requestWithdrawal = asyncHandler(async (req, res) => {
 
     const withdrawal =
         await withdrawalService.requestWithdrawal({
-
             userId,
-
             amount
-
         });
 
     res.status(201).json(
