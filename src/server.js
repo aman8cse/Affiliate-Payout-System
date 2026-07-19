@@ -15,7 +15,7 @@ async function bootstrap() {
     await advanceQueue.upsertJobScheduler(
         "advance-batch",
         {
-            pattern: "* * * * *"
+            pattern: env.ADVANCE_PAYMENT_BATCH
         },
         {
             name: "advance-payout"
@@ -25,7 +25,7 @@ async function bootstrap() {
     await finalQueue.upsertJobScheduler(
         "final-batch",
         {
-            pattern: "* * * * *"
+            pattern: env.FINAL_PAYMENT_BATCH
         },
         {
             name: "final-reconciliation"
