@@ -3,9 +3,7 @@ import Wallet from "../models/Wallet.js";
 import ApiError from "../utils/ApiError.js";
 
 class UserService {
-
     async createUser(data) {
-
         const existingUser = await User.findOne({
             email: data.email
         });
@@ -27,7 +25,6 @@ class UserService {
     }
 
     async getUserById(userId) {
-
         const user = await User.findById(userId);
 
         if (!user) {
@@ -36,7 +33,6 @@ class UserService {
 
         return user;
     }
-
 }
 
 export default new UserService();

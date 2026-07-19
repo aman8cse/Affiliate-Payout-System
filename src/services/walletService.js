@@ -1,12 +1,8 @@
-import mongoose from "mongoose";
-
 import Wallet from "../models/Wallet.js";
 import ApiError from "../utils/ApiError.js";
 
 class WalletService {
-
     async getWallet(userId, session = null) {
-
         const wallet = await Wallet.findOne({
             user: userId
         }).session(session);
@@ -19,7 +15,6 @@ class WalletService {
     }
 
     async credit(userId, amount, session = null) {
-
         const wallet = await this.getWallet(userId, session);
 
         wallet.balance += amount;
@@ -31,7 +26,6 @@ class WalletService {
     }
 
     async debit(userId, amount, session = null) {
-
         const wallet = await this.getWallet(userId, session);
 
         wallet.balance -= amount;
@@ -40,7 +34,6 @@ class WalletService {
 
         return wallet;
     }
-
 }
 
 export default new WalletService();

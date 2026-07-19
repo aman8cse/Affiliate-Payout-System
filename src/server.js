@@ -3,6 +3,7 @@ import env from "./config/env.js";
 import logger from "./config/logger.js";
 import { connectDB } from "./config/db.js";
 import "./config/redis.js";
+
 import advanceQueue from "./queues/advancePayout.queue.js";
 import finalQueue from "./queues/finalReconciliation.queue.js";
 
@@ -12,6 +13,7 @@ import "./workers/withdrawal.worker.js";
 
 async function bootstrap() {
     await connectDB();
+
     await advanceQueue.upsertJobScheduler(
         "advance-batch",
         {
@@ -33,13 +35,8 @@ async function bootstrap() {
     );
 
     app.listen(env.PORT, () => {
-
-        logger.info(
-            `Server running on port ${env.PORT}`
-        );
-
+        logger.info(`Server running on port ${env.PORT}`);
     });
-
 }
 
 bootstrap();

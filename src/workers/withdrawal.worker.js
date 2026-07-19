@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
 import { Worker } from "bullmq";
+
 import redis from "../config/redis.js";
 import logger from "../config/logger.js";
-import env from "../config/env.js";
 import Withdrawal from "../models/Withdrawal.js";
 import walletService from "../services/walletService.js";
 import transactionService from "../services/transactionService.js";
 import paymentGatewayService from "../services/paymentGatewayService.js";
-import {TRANSACTION_TYPE, WITHDRAWAL_STATUS} from "../utils/constants.js";
+import { TRANSACTION_TYPE, WITHDRAWAL_STATUS } from "../utils/constants.js";
 
 const worker = new Worker(
     "withdrawal",
-    async job => {
+    async (job) => {
         const { withdrawalId } = job.data;
-
         const session = await mongoose.startSession();
 
         try {
@@ -50,10 +49,6 @@ const worker = new Worker(
                 session
             });
 
-            /*
-                Simulate Payment Gateway
-            */
-
             const { success } = await paymentGatewayService.transfer();
 
             if (success) {
@@ -80,19 +75,14 @@ const worker = new Worker(
             }
 
             withdrawal.processedAt = new Date();
-
             await withdrawal.save({ session });
-
             await session.commitTransaction();
-
         } catch (error) {
             await session.abortTransaction();
             logger.error(error);
-
         } finally {
             session.endSession();
         }
-
     },
     {
         connection: redis

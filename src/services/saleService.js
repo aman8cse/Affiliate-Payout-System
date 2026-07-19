@@ -1,10 +1,9 @@
+import env from "../config/env.js";
 import Sale from "../models/Sale.js";
 import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
-import env from "../config/env.js";
 
 class SaleService {
-
     async createSale({ userId, commissionAmount }) {
         const user = await User.findById(userId);
 
@@ -30,25 +29,19 @@ class SaleService {
     }
 
     async getSales() {
-
         return Sale.find()
             .populate("user", "name email")
-            .sort({
-                createdAt: -1
-            });
-
+            .sort({ createdAt: -1 });
     }
 
     async getSaleById(id) {
-        const sale = await Sale.findById(id)
-            .populate("user", "name email");
+        const sale = await Sale.findById(id).populate("user", "name email");
 
         if (!sale) {
             throw new ApiError(404, "Sale not found");
         }
 
         return sale;
-
     }
 
     async confirmSale(saleId) {
@@ -59,22 +52,15 @@ class SaleService {
         }
 
         if (sale.status !== "PENDING") {
-            throw new ApiError(
-                400,
-                "Sale already reconciled"
-            );
+            throw new ApiError(400, "Sale already reconciled");
         }
 
         sale.status = "CONFIRMED";
-
-        sale.finalAmount =
-            sale.commissionAmount -
-            sale.advanceAmount;
+        sale.finalAmount = sale.commissionAmount - sale.advanceAmount;
 
         await sale.save();
 
         return sale;
-
     }
 
     async rejectSale(saleId) {
@@ -85,16 +71,11 @@ class SaleService {
         }
 
         if (sale.status !== "PENDING") {
-            throw new ApiError(
-                400,
-                "Sale already reconciled"
-            );
+            throw new ApiError(400, "Sale already reconciled");
         }
 
         sale.status = "REJECTED";
-
-        sale.finalAmount =
-            -sale.advanceAmount;
+        sale.finalAmount = -sale.advanceAmount;
 
         await sale.save();
 

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Worker } from "bullmq";
+
 import redis from "../config/redis.js";
 import Sale from "../models/Sale.js";
 import walletService from "../services/walletService.js";
@@ -12,9 +13,7 @@ const worker = new Worker(
         const sales = await Sale.find({
             status: "PENDING",
             advancePaid: false
-        }).sort({
-            createdAt: 1
-        });
+        }).sort({ createdAt: 1 });
 
         const groupedSales = new Map();
 
@@ -29,7 +28,6 @@ const worker = new Worker(
         }
 
         for (const [userId, userSales] of groupedSales) {
-
             const session = await mongoose.startSession();
 
             try {
@@ -41,17 +39,10 @@ const worker = new Worker(
                     totalAdvance += sale.advanceAmount;
                 }
 
-                const wallet = await walletService.credit(
-                    userId,
-                    totalAdvance,
-                    session
-                );
-
-                let runningBalance =
-                    wallet.balance - totalAdvance;
+                const wallet = await walletService.credit(userId, totalAdvance, session);
+                let runningBalance = wallet.balance - totalAdvance;
 
                 for (const sale of userSales) {
-
                     runningBalance += sale.advanceAmount;
 
                     await transactionService.create({
@@ -69,9 +60,7 @@ const worker = new Worker(
                 await Sale.updateMany(
                     {
                         _id: {
-                            $in: userSales.map(
-                                sale => sale._id
-                            )
+                            $in: userSales.map((sale) => sale._id)
                         }
                     },
                     {
@@ -83,24 +72,19 @@ const worker = new Worker(
                         session
                     }
                 );
-                await session.commitTransaction();
-            }
 
-            catch (error) {
+                await session.commitTransaction();
+            } catch (error) {
                 await session.abortTransaction();
                 console.error(error);
-            }
-
-            finally {
+            } finally {
                 session.endSession();
             }
         }
     },
-
     {
         connection: redis
     }
-
 );
 
 export default worker;

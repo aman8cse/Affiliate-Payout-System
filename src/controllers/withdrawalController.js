@@ -1,11 +1,9 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 
 import withdrawalService from "../services/withdrawalService.js";
-
 import ApiResponse from "../utils/ApiResponse.js";
 
 export const requestWithdrawal = asyncHandler(async (req, res) => {
-
     const { userId, amount } = req.body;
 
     if (!userId || !amount) {
@@ -15,35 +13,20 @@ export const requestWithdrawal = asyncHandler(async (req, res) => {
         });
     }
 
-    const withdrawal =
-        await withdrawalService.requestWithdrawal({
-            userId,
-            amount
-        });
+    const withdrawal = await withdrawalService.requestWithdrawal({
+        userId,
+        amount
+    });
 
     res.status(201).json(
-        new ApiResponse(
-            201,
-            "Withdrawal request created",
-            withdrawal
-        )
+        new ApiResponse(201, "Withdrawal request created", withdrawal)
     );
-
 });
 
 export const getUserWithdrawals = asyncHandler(async (req, res) => {
-
-    const withdrawals =
-        await withdrawalService.getUserWithdrawals(
-            req.params.userId
-        );
+    const withdrawals = await withdrawalService.getUserWithdrawals(req.params.userId);
 
     res.status(200).json(
-        new ApiResponse(
-            200,
-            "Withdrawals fetched successfully",
-            withdrawals
-        )
+        new ApiResponse(200, "Withdrawals fetched successfully", withdrawals)
     );
-
 });

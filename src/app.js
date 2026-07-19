@@ -1,8 +1,10 @@
-import express from "express";
 import cors from "cors";
+import express from "express";
+
 import requestId from "./middleware/requestId.js";
 import { generalLimiter } from "./middleware/rateLimiter.js";
 import errorHandler from "./middleware/errorHandler.js";
+
 import userRoutes from "./routes/user.routes.js";
 import saleRoutes from "./routes/sale.routes.js";
 import walletRoutes from "./routes/wallet.routes.js";
