@@ -6,6 +6,7 @@ import Sale from "../models/Sale.js";
 import walletService from "../services/walletService.js";
 import transactionService from "../services/transactionService.js";
 import { TRANSACTION_TYPE } from "../utils/constants.js";
+import logger from "../config/logger.js";
 
 const worker = new Worker(
     "advance-payout",
@@ -17,6 +18,7 @@ const worker = new Worker(
 
         const groupedSales = new Map();
 
+        //Storing all the sales for a user to make one full credit payment instead many fragmented payments
         for (const sale of sales) {
             const key = sale.user.toString();
 
@@ -28,6 +30,8 @@ const worker = new Worker(
         }
 
         for (const [userId, userSales] of groupedSales) {
+
+            //creating mongoose session to prevent partial updates and follow ACID priciples
             const session = await mongoose.startSession();
 
             try {
@@ -35,6 +39,7 @@ const worker = new Worker(
 
                 let totalAdvance = 0;
 
+                //calculating total advance payment for all the sale with a user
                 for (const sale of userSales) {
                     totalAdvance += sale.advanceAmount;
                 }
@@ -42,6 +47,7 @@ const worker = new Worker(
                 const wallet = await walletService.credit(userId, totalAdvance, session);
                 let runningBalance = wallet.balance - totalAdvance;
 
+                //making transaction ledger entries for each sale with a user, thought payment credited will be done in total and not per sale 
                 for (const sale of userSales) {
                     runningBalance += sale.advanceAmount;
 
@@ -76,7 +82,7 @@ const worker = new Worker(
                 await session.commitTransaction();
             } catch (error) {
                 await session.abortTransaction();
-                console.error(error);
+                logger.error(error);
             } finally {
                 session.endSession();
             }

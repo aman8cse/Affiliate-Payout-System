@@ -14,6 +14,7 @@ import "./workers/withdrawal.worker.js";
 async function bootstrap() {
     await connectDB();
 
+    //started advance and final payment batch jobs, can be later moved to a separate Node process or server
     await advanceQueue.upsertJobScheduler(
         "advance-batch",
         {

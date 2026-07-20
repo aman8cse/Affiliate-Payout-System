@@ -4,6 +4,8 @@ import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
 
 class SaleService {
+
+    //creating a new sale
     async createSale({ userId, commissionAmount }) {
         const user = await User.findById(userId);
 
@@ -28,12 +30,14 @@ class SaleService {
         return sale;
     }
 
+    //fetching all sales, used for batch payment jobs
     async getSales() {
         return Sale.find()
             .populate("user", "name email")
             .sort({ createdAt: -1 });
     }
 
+    //get a sale with id
     async getSaleById(id) {
         const sale = await Sale.findById(id).populate("user", "name email");
 
@@ -44,6 +48,7 @@ class SaleService {
         return sale;
     }
 
+    //used by admin to confirm a sale, final payment batch job will handle payments without any intersection with this service
     async confirmSale(saleId) {
         const sale = await Sale.findById(saleId);
 
@@ -63,6 +68,7 @@ class SaleService {
         return sale;
     }
 
+    //admin can use to reject a sale, not bound with batch payment, again modularity with separation of concerns
     async rejectSale(saleId) {
         const sale = await Sale.findById(saleId);
 

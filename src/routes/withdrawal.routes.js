@@ -4,6 +4,7 @@ import { withdrawLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
+//withdrawal routes with added rate-limiting
 router.post("/", withdrawLimiter, requestWithdrawal);
 router.get("/:userId", getUserWithdrawals);
 

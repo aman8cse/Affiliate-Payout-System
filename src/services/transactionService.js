@@ -1,6 +1,8 @@
 import Transaction from "../models/Transaction.js";
 
 class TransactionService {
+
+    //create a new wallet whenever a user is created, it's binded with user service
     async create({
         walletId,
         type,
@@ -24,6 +26,7 @@ class TransactionService {
         ], { session });
     }
 
+    //get all transactions in a wallet
     async getWalletTransactions(walletId) {
         return Transaction.find({ wallet: walletId }).sort({ createdAt: -1 });
     }

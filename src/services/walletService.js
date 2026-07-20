@@ -2,6 +2,8 @@ import Wallet from "../models/Wallet.js";
 import ApiError from "../utils/ApiError.js";
 
 class WalletService {
+
+    //get wallet by user id
     async getWallet(userId, session = null) {
         const wallet = await Wallet.findOne({
             user: userId
@@ -14,6 +16,8 @@ class WalletService {
         return wallet;
     }
 
+
+    //credit amount in wallet
     async credit(userId, amount, session = null) {
         const wallet = await this.getWallet(userId, session);
 
@@ -25,6 +29,7 @@ class WalletService {
         return wallet;
     }
 
+    //debit amount from wallet
     async debit(userId, amount, session = null) {
         const wallet = await this.getWallet(userId, session);
 

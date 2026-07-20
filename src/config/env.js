@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+//preventive measure to gracefully set env to bypass server failure in case misconfigured/missing env
 const env = {
     PORT: process.env.PORT || 3000,
     MONGO_URI: process.env.MONGO_URI,

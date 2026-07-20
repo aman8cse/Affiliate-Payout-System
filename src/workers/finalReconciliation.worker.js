@@ -21,6 +21,7 @@ const worker = new Worker(
 
         const groupedSales = new Map();
 
+        //Storing all the sales for a user to make one full credit payment instead many fragmented payments
         for (const sale of sales) {
             const key = sale.user.toString();
 
@@ -32,6 +33,8 @@ const worker = new Worker(
         }
 
         for (const [userId, userSales] of groupedSales) {
+
+            //creating mongoose session to prevent partial updates and follow ACID priciples
             const session = await mongoose.startSession();
 
             try {
@@ -39,6 +42,7 @@ const worker = new Worker(
 
                 let totalAmount = 0;
 
+                //calculating total advance payment for all the sale with a user
                 for (const sale of userSales) {
                     totalAmount += sale.finalAmount;
                 }
@@ -54,6 +58,7 @@ const worker = new Worker(
 
                 let runningBalance = oldBalance;
 
+                //making transaction ledger entries for each sale with a user, thought payment credited will be done in total and not per sale 
                 for (const sale of userSales) {
                     runningBalance += sale.finalAmount;
 

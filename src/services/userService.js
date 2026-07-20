@@ -3,6 +3,8 @@ import Wallet from "../models/Wallet.js";
 import ApiError from "../utils/ApiError.js";
 
 class UserService {
+
+    //create a new user
     async createUser(data) {
         const existingUser = await User.findOne({
             email: data.email
@@ -24,6 +26,8 @@ class UserService {
         return user;
     }
 
+
+    //get a user by id
     async getUserById(userId) {
         const user = await User.findById(userId);
 
